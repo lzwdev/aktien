@@ -1,2 +1,2157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockMarket Pro - Professional Trading Simulation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --bg-hover: #f0f2f5;
+            --bg-input: #f8f9fa;
+            --border: #dee2e6;
+            --border-light: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-muted: #adb5bd;
+            --accent-green: #28a745;
+            --accent-green-hover: #218838;
+            --accent-red: #dc3545;
+            --accent-red-hover: #c82333;
+            --accent-blue: #007bff;
+            --accent-blue-hover: #0056b3;
+            --accent-gold: #ffc107;
+            --accent-purple: #6f42c1;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-blue);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .logo i {
+            font-size: 24px;
+        }
+
+        .logo span {
+            color: var(--accent-green);
+        }
+
+        .market-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.open {
+            background: var(--accent-green);
+            box-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
+        }
+
+        .status-dot.closed {
+            background: var(--accent-red);
+            box-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Save/Load */
+        .save-load-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .icon-btn .label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 900px) {
+            .icon-btn .label { display: none; }
+        }
+
+        /* Navigation */
+        .nav {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 0 32px;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            position: sticky;
+            top: 73px;
+            z-index: 90;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            padding: 14px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: inherit;
+        }
+
+        .nav-btn i {
+            font-size: 15px;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        .nav-btn.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        .badge {
+            background: var(--accent-blue);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+            padding: 24px 32px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title .title-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--accent-blue);
+        }
+
+        .card-title .subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Portfolio Summary */
+        .portfolio-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .summary-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .summary-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .summary-header i {
+            color: var(--accent-blue);
+            font-size: 14px;
+        }
+
+        .summary-value {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .positive { color: var(--accent-green); }
+        .negative { color: var(--accent-red); }
+
+        /* Stock Table */
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .stock-table th {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 2px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stock-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 14px;
+        }
+
+        .stock-table tbody tr {
+            transition: var(--transition);
+        }
+
+        .stock-table tbody tr:hover {
+            background: var(--bg-hover);
+            cursor: pointer;
+        }
+
+        .stock-symbol {
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            letter-spacing: 0.3px;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-buy {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-buy:hover {
+            background: var(--accent-green-hover);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-sell {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .btn-sell:hover {
+            background: var(--accent-red-hover);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .btn-outline:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 4px;
+        }
+
+        /* Custom Select */
+        .custom-select {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-select select {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .custom-select select:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .custom-select select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .custom-select::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+            font-size: 14px;
+        }
+
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .form-group input[readonly] {
+            background: var(--bg-hover);
+            cursor: not-allowed;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .input-with-icon input {
+            padding-left: 40px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: none;
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-title i {
+            color: var(--accent-blue);
+        }
+
+        /* News Items */
+        .news-item {
+            padding: 16px;
+            border-left: 4px solid var(--border);
+            margin-bottom: 12px;
+            background: var(--bg-primary);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .news-item:hover {
+            border-left-color: var(--accent-blue);
+            background: var(--bg-hover);
+            transform: translateX(4px);
+        }
+
+        .news-time {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .news-impact {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+            text-transform: uppercase;
+        }
+
+        .impact-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .impact-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .impact-low {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* Charts */
+        .chart-container {
+            background: var(--bg-primary);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .chart-container svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 56px;
+            margin-bottom: 20px;
+            color: var(--border);
+        }
+
+        .empty-state h3 {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        /* Section icons */
+        .stock-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stock-detail-grid h3 {
+            color: var(--accent-blue);
+            margin-bottom: 12px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stock-detail-grid p {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-light);
+            font-size: 14px;
+        }
+
+        .stock-detail-grid p strong {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+                flex-wrap: wrap;
+            }
+            
+            .nav {
+                padding: 0 16px;
+                top: 65px;
+            }
+            
+            .main-container {
+                padding: 16px;
+            }
+            
+            .portfolio-summary {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stock-detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <i class="fa-solid fa-chart-line"></i>
+            Stock<span>Market</span> Pro
+        </div>
+        <div class="market-status">
+            <span class="status-dot open" id="marketDot"></span>
+            <span id="marketStatus">Market Open</span>
+            <span style="color: var(--text-muted);" id="currentTime"></span>
+        </div>
+        <div class="save-load-container">
+            <button class="icon-btn" onclick="saveGame()" title="Save Game">
+                <i class="fa-solid fa-floppy-disk"></i>
+                <span class="label">Save</span>
+            </button>
+            <button class="icon-btn" onclick="loadGame()" title="Load Game">
+                <i class="fa-solid fa-folder-open"></i>
+                <span class="label">Load</span>
+            </button>
+            <button class="icon-btn" onclick="exportConfig()" title="Export Configuration">
+                <i class="fa-solid fa-file-export"></i>
+                <span class="label">Export</span>
+            </button>
+            <button class="icon-btn" onclick="importConfig()" title="Import Configuration">
+                <i class="fa-solid fa-file-import"></i>
+                <span class="label">Import</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <button class="nav-btn active" onclick="showSection('overview', this)">
+            <i class="fa-solid fa-gauge-high"></i> Overview
+        </button>
+        <button class="nav-btn" onclick="showSection('portfolio', this)">
+            <i class="fa-solid fa-briefcase"></i> Portfolio <span class="badge" id="positionCount">0</span>
+        </button>
+        <button class="nav-btn" onclick="showSection('market', this)">
+            <i class="fa-solid fa-arrow-trend-up"></i> Market
+        </button>
+        <button class="nav-btn" onclick="showSection('news', this)">
+            <i class="fa-solid fa-newspaper"></i> News <span class="badge" id="newsCount">0</span>
+        </button>
+        <button class="nav-btn" onclick="showSection('analysis', this)">
+            <i class="fa-solid fa-chart-pie"></i> Analysis
+        </button>
+        <button class="nav-btn" onclick="showSection('history', this)">
+            <i class="fa-solid fa-clock-rotate-left"></i> History
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Left Column -->
+        <div>
+            <!-- Overview Section -->
+            <div id="overviewSection">
+                <div class="portfolio-summary">
+                    <div class="summary-item">
+                        <div class="summary-header">
+                            <i class="fa-solid fa-wallet"></i> Portfolio Value
+                        </div>
+                        <div class="summary-value" id="totalValue">$100,000.00</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-header">
+                            <i class="fa-solid fa-money-bill-wave"></i> Available Cash
+                        </div>
+                        <div class="summary-value" id="cashValue">$100,000.00</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-header">
+                            <i class="fa-solid fa-chart-column"></i> Stock Value
+                        </div>
+                        <div class="summary-value" id="stockValue">$0.00</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-header">
+                            <i class="fa-solid fa-percent"></i> Total Return
+                        </div>
+                        <div class="summary-value" id="totalReturn">$0.00 (0.00%)</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <div class="title-left">
+                            <i class="fa-solid fa-ranking-star"></i> Top Positions
+                        </div>
+                        <span class="subtitle">Sorted by value</span>
+                    </div>
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Quantity</th>
+                                <th>Purchase Price</th>
+                                <th>Current Price</th>
+                                <th>Value</th>
+                                <th>Profit/Loss</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topPositions"></tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <div class="title-left">
+                            <i class="fa-solid fa-eye"></i> Watchlist
+                        </div>
+                        <span class="subtitle">Recommended stocks</span>
+                    </div>
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Symbol</th>
+                                <th>Price</th>
+                                <th>Change</th>
+                                <th>Volume</th>
+                                <th>P/E</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="watchlist"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Portfolio Section -->
+            <div id="portfolioSection" style="display: none;">
+                <div class="card">
+                    <div class="card-title">
+                        <div class="title-left">
+                            <i class="fa-solid fa-briefcase"></i> Portfolio Overview
+                        </div>
+                        <span class="subtitle" id="portfolioCount"></span>
+                    </div>
+                    <div id="emptyPortfolio" class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <h3>Your portfolio is empty</h3>
+                        <p>Buy your first stocks in the market section!</p>
+                        <button class="btn btn-buy" style="margin-top: 20px;" onclick="showSection('market', document.querySelectorAll('.nav-btn')[2])">
+                            <i class="fa-solid fa-arrow-trend-up"></i> Go to Market
+                        </button>
+                    </div>
+                    <table class="stock-table" id="portfolioTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Quantity</th>
+                                <th>Avg Purchase Price</th>
+                                <th>Current Price</th>
+                                <th>Value</th>
+                                <th>Profit/Loss</th>
+                                <th>Return</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolioHoldings"></tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <div class="title-left">
+                            <i class="fa-solid fa-receipt"></i> Recent Transactions
+                        </div>
+                    </div>
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Type</th>
+                                <th>Company</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tradeHistory"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Market Section -->
+            <div id="marketSection" style="display: none;">
+                <div class="card">
+                    <div class="card-title">
+                        <div class="title-left">
+                            <i class="fa-solid fa-arrow-trend-up"></i> All Stocks
+                        </div>
+                        <span class="subtitle">Click for details</span>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="searchStock" placeholder="Search stocks by name, symbol or sector..." onkeyup="filterStocks()">
+                        </div>
+                    </div>
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th>Company</th>
+                                <th>Symbol</th>
+                                <th>Price</th>
+                                <th>Change</th>
+                                <th>Volume</th>
+                                <th>P/E</th>
+                                <th>Dividend</th>
+                                <th>Sector</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allStocks"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- News Section -->
+            <div id="newsSection" style="display: none;">
+                <div class="card">
+                    <div class="card-title">
+                        <div class="title-left">
+                            <i class="fa-solid fa-newspaper"></i> Latest News
+                        </div>
+                    </div>
+                    <div id="newsFeed"></div>
+                </div>
+            </div>
+
+            <!-- Analysis Section -->
+            <div id="analysisSection" style="display: none;">
+                <div class="card">
+                    <div class="card-title">
+                        <div class="title-left">
+                            <i class="fa-solid fa-chart-pie"></i> Market Analysis
+                        </div>
+                    </div>
+                    <div id="marketAnalysis"></div>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div id="historySection" style="display: none;">
+                <div class="card">
+                    <div class="card-title">
+                        <div class="title-left">
+                            <i class="fa-solid fa-clock-rotate-left"></i> Complete Transaction History
+                        </div>
+                    </div>
+                    <table class="stock-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Company</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Cash After</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fullHistory"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div>
+            <!-- Market Indices -->
+            <div class="card">
+                <div class="card-title">
+                    <div class="title-left">
+                        <i class="fa-solid fa-globe"></i> Market Indices
+                    </div>
+                </div>
+                <div id="marketIndices"></div>
+            </div>
+
+            <!-- Trading Panel -->
+            <div class="card">
+                <div class="card-title">
+                    <div class="title-left">
+                        <i class="fa-solid fa-bolt"></i> Quick Trade
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Company</label>
+                    <div class="custom-select">
+                        <select id="tradeStock" onchange="updateTradePrice()"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Current Price</label>
+                    <input type="text" id="tradePrice" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="number" id="tradeAmount" min="1" value="1" onchange="updateTradeTotal()">
+                </div>
+                <div class="form-group">
+                    <label>Total Value</label>
+                    <input type="text" id="tradeTotal" readonly>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-buy" style="flex: 1;" onclick="executeTrade('buy')">
+                        <i class="fa-solid fa-cart-shopping"></i> Buy
+                    </button>
+                    <button class="btn btn-sell" style="flex: 1;" onclick="executeTrade('sell')">
+                        <i class="fa-solid fa-money-bill-transfer"></i> Sell
+                    </button>
+                </div>
+            </div>
+
+            <!-- News Ticker -->
+            <div class="card">
+                <div class="card-title">
+                    <div class="title-left">
+                        <i class="fa-solid fa-tower-broadcast"></i> Live Ticker
+                    </div>
+                </div>
+                <div id="newsTicker" style="max-height: 400px; overflow-y: auto;"></div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="card">
+                <div class="card-title">
+                    <div class="title-left">
+                        <i class="fa-solid fa-chart-line"></i> Portfolio Performance
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div id="performanceChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Detail Modal -->
+    <div class="modal-overlay" id="stockDetailModal">
+        <div class="modal">
+            <div class="modal-title" id="stockDetailTitle">
+                <i class="fa-solid fa-chart-simple"></i> Stock Details
+            </div>
+            <div id="stockDetailContent"></div>
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="btn btn-buy" style="flex: 1;" onclick="buyFromDetail()">
+                    <i class="fa-solid fa-cart-shopping"></i> Buy
+                </button>
+                <button class="btn btn-outline" style="flex: 1;" onclick="closeStockDetail()">
+                    <i class="fa-solid fa-xmark"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trade Modal -->
+    <div class="modal-overlay" id="tradeModal">
+        <div class="modal">
+            <div class="modal-title" id="modalTitle">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i> Execute Trade
+            </div>
+            <div id="modalContent"></div>
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="btn btn-buy" style="flex: 1;" onclick="confirmTrade()">
+                    <i class="fa-solid fa-check"></i> Confirm
+                </button>
+                <button class="btn btn-outline" style="flex: 1;" onclick="closeModal()">
+                    <i class="fa-solid fa-xmark"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            cash: 100000,
+            portfolio: {},
+            trades: [],
+            totalDeposits: 100000,
+            startDate: new Date().toISOString(),
+            currentDay: 0,
+            performanceHistory: [{value: 100000, timestamp: new Date().toISOString()}],
+            version: '1.0'
+        };
+
+        // Stock Data
+        const stocks = [
+            { symbol: 'AAPL', name: 'Apple Inc.', price: 189.50, change: 0, volume: 50000000, pe: 28.5, sector: 'Technology', dividend: 0.5, marketCap: '2.9T', beta: 1.2 },
+            { symbol: 'MSFT', name: 'Microsoft Corp.', price: 374.20, change: 0, volume: 25000000, pe: 35.2, sector: 'Technology', dividend: 0.9, marketCap: '2.8T', beta: 0.9 },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 141.80, change: 0, volume: 30000000, pe: 24.8, sector: 'Technology', dividend: 0, marketCap: '1.8T', beta: 1.1 },
+            { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 155.30, change: 0, volume: 40000000, pe: 42.1, sector: 'Consumer', dividend: 0, marketCap: '1.6T', beta: 1.3 },
+            { symbol: 'TSLA', name: 'Tesla Inc.', price: 245.60, change: 0, volume: 80000000, pe: 65.4, sector: 'Automotive', dividend: 0, marketCap: '780B', beta: 2.0 },
+            { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 495.80, change: 0, volume: 45000000, pe: 58.9, sector: 'Technology', dividend: 0.04, marketCap: '1.2T', beta: 1.7 },
+            { symbol: 'META', name: 'Meta Platforms', price: 358.40, change: 0, volume: 20000000, pe: 29.3, sector: 'Technology', dividend: 0, marketCap: '920B', beta: 1.4 },
+            { symbol: 'JPM', name: 'JPMorgan Chase', price: 165.20, change: 0, volume: 10000000, pe: 10.5, sector: 'Finance', dividend: 2.8, marketCap: '480B', beta: 1.1 },
+            { symbol: 'V', name: 'Visa Inc.', price: 255.90, change: 0, volume: 8000000, pe: 30.7, sector: 'Finance', dividend: 0.8, marketCap: '520B', beta: 0.9 },
+            { symbol: 'JNJ', name: 'Johnson & Johnson', price: 155.70, change: 0, volume: 9000000, pe: 15.2, sector: 'Healthcare', dividend: 2.9, marketCap: '390B', beta: 0.5 },
+            { symbol: 'WMT', name: 'Walmart Inc.', price: 165.30, change: 0, volume: 7000000, pe: 26.8, sector: 'Consumer', dividend: 1.4, marketCap: '440B', beta: 0.5 },
+            { symbol: 'PG', name: 'Procter & Gamble', price: 155.20, change: 0, volume: 6000000, pe: 24.5, sector: 'Consumer', dividend: 2.5, marketCap: '370B', beta: 0.4 },
+            { symbol: 'XOM', name: 'Exxon Mobil', price: 105.40, change: 0, volume: 15000000, pe: 11.2, sector: 'Energy', dividend: 3.8, marketCap: '420B', beta: 1.0 },
+            { symbol: 'KO', name: 'Coca-Cola Co.', price: 58.90, change: 0, volume: 12000000, pe: 23.7, sector: 'Consumer', dividend: 3.1, marketCap: '250B', beta: 0.5 },
+            { symbol: 'DIS', name: 'Walt Disney Co.', price: 92.40, change: 0, volume: 10000000, pe: 68.2, sector: 'Media', dividend: 0, marketCap: '170B', beta: 1.3 },
+            { symbol: 'NFLX', name: 'Netflix Inc.', price: 485.60, change: 0, volume: 6000000, pe: 45.3, sector: 'Media', dividend: 0, marketCap: '210B', beta: 1.2 },
+            { symbol: 'ADBE', name: 'Adobe Inc.', price: 598.20, change: 0, volume: 3000000, pe: 48.7, sector: 'Technology', dividend: 0, marketCap: '270B', beta: 1.3 },
+            { symbol: 'SAP', name: 'SAP SE', price: 155.30, change: 0, volume: 2000000, pe: 28.4, sector: 'Technology', dividend: 1.5, marketCap: '180B', beta: 0.8 },
+            { symbol: 'SIE', name: 'Siemens AG', price: 165.80, change: 0, volume: 3000000, pe: 17.2, sector: 'Industrial', dividend: 2.8, marketCap: '130B', beta: 0.9 },
+            { symbol: 'ALV', name: 'Allianz SE', price: 245.60, change: 0, volume: 2000000, pe: 11.8, sector: 'Finance', dividend: 4.5, marketCap: '100B', beta: 0.7 },
+            { symbol: 'BMW', name: 'BMW AG', price: 98.50, change: 0, volume: 1500000, pe: 5.2, sector: 'Automotive', dividend: 6.8, marketCap: '62B', beta: 0.9 },
+            { symbol: 'AIR', name: 'Airbus SE', price: 145.80, change: 0, volume: 3000000, pe: 32.4, sector: 'Industrial', dividend: 1.2, marketCap: '115B', beta: 1.1 },
+        ];
+
+        let marketIndices = [
+            { name: 'DAX', value: 16750.25, change: 0 },
+            { name: 'S&P 500', value: 4780.50, change: 0 },
+            { name: 'NASDAQ', value: 16850.75, change: 0 },
+        ];
+
+        let newsFeed = [];
+        let newsCounter = 0;
+        let selectedDetailStock = null;
+
+        // Initialize
+        function init() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            setInterval(simulateMarket, 3000);
+            populateStockSelect();
+            populateWatchlist();
+            updatePortfolio();
+            updateNewsTicker();
+            generateInitialNews();
+            updatePerformanceChart();
+            setInterval(updatePerformanceChart, 5000);
+        }
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US');
+            
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const isOpen = (hours > 9 || (hours === 9 && minutes >= 0)) && 
+                          (hours < 17 || (hours === 17 && minutes <= 30));
+            
+            const dot = document.getElementById('marketDot');
+            const status = document.getElementById('marketStatus');
+            
+            if (isOpen) {
+                dot.className = 'status-dot open';
+                status.textContent = 'Market Open';
+            } else {
+                dot.className = 'status-dot closed';
+                status.textContent = 'Market Closed';
+            }
+        }
+
+        function simulateMarket() {
+            stocks.forEach(stock => {
+                const volatility = stock.beta * 0.003;
+                const change = (Math.random() - 0.5) * 2 * volatility;
+                const oldPrice = stock.price;
+                stock.price = Math.max(0.01, stock.price * (1 + change));
+                stock.change = ((stock.price - oldPrice) / oldPrice) * 100;
+                stock.volume = Math.floor(stock.volume * (1 + (Math.random() - 0.5) * 0.1));
+            });
+            
+            marketIndices.forEach(index => {
+                const change = (Math.random() - 0.5) * 0.004;
+                const oldValue = index.value;
+                index.value = Math.max(1, index.value * (1 + change));
+                index.change = ((index.value - oldValue) / oldValue) * 100;
+            });
+            
+            if (Math.random() < 0.4) generateNews();
+            
+            const currentValue = gameState.cash + calculateStockValue();
+            gameState.performanceHistory.push({value: currentValue, timestamp: new Date().toISOString()});
+            if (gameState.performanceHistory.length > 100) gameState.performanceHistory.shift();
+            
+            updatePortfolio();
+            populateWatchlist();
+            updateMarketIndices();
+            updateNewsTicker();
+            updateStockSelect();
+            updatePerformanceChart();
+        }
+
+        function generateNews() {
+            const company = stocks[Math.floor(Math.random() * stocks.length)];
+            const newsTypes = [
+                { text: `${company.name} reports record quarterly earnings`, impact: 'high', type: 'positive', category: 'Earnings' },
+                { text: `${company.name} announces $10B stock buyback`, impact: 'medium', type: 'positive', category: 'Buyback' },
+                { text: `${company.name} wins major government contract`, impact: 'medium', type: 'positive', category: 'Contract' },
+                { text: `${company.name} lowers full-year guidance`, impact: 'high', type: 'negative', category: 'Warning' },
+                { text: `${company.name} plans 5,000 job cuts`, impact: 'medium', type: 'negative', category: 'Restructuring' },
+                { text: `${company.name} unveils revolutionary new product`, impact: 'low', type: 'positive', category: 'Product' },
+                { text: `Analysts upgrade ${company.name} to Buy`, impact: 'medium', type: 'positive', category: 'Rating' },
+                { text: `${company.name} faces patent lawsuit`, impact: 'medium', type: 'negative', category: 'Legal' },
+                { text: `${company.name} expands into Asian markets`, impact: 'low', type: 'positive', category: 'Expansion' },
+                { text: `Insiders buy $5M worth of ${company.name} shares`, impact: 'medium', type: 'positive', category: 'Insider' },
+                { text: `${company.name} halts production due to supply issues`, impact: 'high', type: 'negative', category: 'Production' },
+                { text: `${company.name} declares special dividend`, impact: 'low', type: 'positive', category: 'Dividend' },
+            ];
+            
+            const news = newsTypes[Math.floor(Math.random() * newsTypes.length)];
+            const newsItem = {
+                id: ++newsCounter,
+                time: new Date().toLocaleTimeString('en-US'),
+                text: news.text,
+                impact: news.impact,
+                type: news.type,
+                company: company.symbol,
+                companyName: company.name,
+                category: news.category,
+            };
+            
+            newsFeed.unshift(newsItem);
+            
+            const impactMultiplier = news.type === 'positive' ? 1 : -1;
+            const impactAmount = news.impact === 'high' ? 0.04 : news.impact === 'medium' ? 0.02 : 0.008;
+            company.price *= (1 + impactMultiplier * impactAmount);
+            
+            if (newsFeed.length > 100) newsFeed.pop();
+            document.getElementById('newsCount').textContent = newsFeed.length;
+        }
+
+        function generateInitialNews() {
+            for (let i = 0; i < 15; i++) generateNews();
+        }
+
+        function updatePortfolio() {
+            const totalStockValue = calculateStockValue();
+            const totalValue = gameState.cash + totalStockValue;
+            const totalReturn = totalValue - gameState.totalDeposits;
+            const totalReturnPercent = (totalReturn / gameState.totalDeposits) * 100;
+            
+            document.getElementById('totalValue').textContent = formatCurrency(totalValue);
+            document.getElementById('cashValue').textContent = formatCurrency(gameState.cash);
+            document.getElementById('stockValue').textContent = formatCurrency(totalStockValue);
+            
+            const returnEl = document.getElementById('totalReturn');
+            returnEl.textContent = `${formatCurrency(totalReturn)} (${totalReturnPercent.toFixed(2)}%)`;
+            returnEl.className = 'summary-value ' + (totalReturn >= 0 ? 'positive' : 'negative');
+            
+            const positionCount = Object.keys(gameState.portfolio).length;
+            document.getElementById('positionCount').textContent = positionCount;
+            document.getElementById('portfolioCount').textContent = `${positionCount} positions`;
+            
+            updateTopPositions();
+            updatePortfolioHoldings();
+            updateTradeHistory();
+            updateFullHistory();
+        }
+
+        function calculateStockValue() {
+            let total = 0;
+            for (const [symbol, position] of Object.entries(gameState.portfolio)) {
+                const stock = stocks.find(s => s.symbol === symbol);
+                if (stock) total += position.quantity * stock.price;
+            }
+            return total;
+        }
+
+        function updateTopPositions() {
+            const tbody = document.getElementById('topPositions');
+            tbody.innerHTML = '';
+            
+            const positions = Object.entries(gameState.portfolio)
+                .map(([symbol, pos]) => {
+                    const stock = stocks.find(s => s.symbol === symbol);
+                    return {
+                        symbol,
+                        name: stock ? stock.name : symbol,
+                        quantity: pos.quantity,
+                        avgPrice: pos.avgPrice,
+                        currentPrice: stock ? stock.price : 0,
+                        value: pos.quantity * (stock ? stock.price : 0),
+                    };
+                })
+                .sort((a, b) => b.value - a.value)
+                .slice(0, 5);
+            
+            if (positions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;"><i class="fa-solid fa-inbox" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>No positions yet</td></tr>';
+                return;
+            }
+            
+            positions.forEach(pos => {
+                const profit = (pos.currentPrice - pos.avgPrice) * pos.quantity;
+                const profitPercent = ((pos.currentPrice - pos.avgPrice) / pos.avgPrice) * 100;
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><span class="stock-symbol">${pos.symbol}</span> - ${pos.name}</td>
+                    <td>${pos.quantity}</td>
+                    <td>${formatCurrency(pos.avgPrice)}</td>
+                    <td>${formatCurrency(pos.currentPrice)}</td>
+                    <td>${formatCurrency(pos.value)}</td>
+                    <td class="${profit >= 0 ? 'positive' : 'negative'}">
+                        ${formatCurrency(profit)} (${profitPercent.toFixed(2)}%)
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-buy btn-sm" onclick="event.stopPropagation(); openTradeModal('${pos.symbol}', 'buy')" title="Buy more"><i class="fa-solid fa-plus"></i></button>
+                            <button class="btn btn-sell btn-sm" onclick="event.stopPropagation(); openTradeModal('${pos.symbol}', 'sell')" title="Sell"><i class="fa-solid fa-minus"></i></button>
+                        </div>
+                    </td>
+                `;
+                row.onclick = () => showStockDetail(pos.symbol);
+            });
+        }
+
+        function updatePortfolioHoldings() {
+            const tbody = document.getElementById('portfolioHoldings');
+            const table = document.getElementById('portfolioTable');
+            const emptyMsg = document.getElementById('emptyPortfolio');
+            
+            tbody.innerHTML = '';
+            
+            if (Object.keys(gameState.portfolio).length === 0) {
+                table.style.display = 'none';
+                emptyMsg.style.display = 'block';
+                return;
+            }
+            
+            table.style.display = 'table';
+            emptyMsg.style.display = 'none';
+            
+            for (const [symbol, position] of Object.entries(gameState.portfolio)) {
+                const stock = stocks.find(s => s.symbol === symbol);
+                if (!stock) continue;
+                
+                const currentValue = position.quantity * stock.price;
+                const costBasis = position.quantity * position.avgPrice;
+                const profit = currentValue - costBasis;
+                const profitPercent = (profit / costBasis) * 100;
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><span class="stock-symbol">${stock.symbol}</span> - ${stock.name}</td>
+                    <td>${position.quantity}</td>
+                    <td>${formatCurrency(position.avgPrice)}</td>
+                    <td>${formatCurrency(stock.price)}</td>
+                    <td>${formatCurrency(currentValue)}</td>
+                    <td class="${profit >= 0 ? 'positive' : 'negative'}">${formatCurrency(profit)}</td>
+                    <td class="${profit >= 0 ? 'positive' : 'negative'}">${profitPercent.toFixed(2)}%</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-buy btn-sm" onclick="event.stopPropagation(); openTradeModal('${stock.symbol}', 'buy')"><i class="fa-solid fa-cart-shopping"></i> Buy</button>
+                            <button class="btn btn-sell btn-sm" onclick="event.stopPropagation(); openTradeModal('${stock.symbol}', 'sell')"><i class="fa-solid fa-money-bill-transfer"></i> Sell</button>
+                        </div>
+                    </td>
+                `;
+                row.onclick = () => showStockDetail(stock.symbol);
+            }
+        }
+
+        function populateWatchlist() {
+            const tbody = document.getElementById('watchlist');
+            tbody.innerHTML = '';
+            
+            stocks.slice(0, 15).forEach(stock => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${stock.name}</td>
+                    <td><span class="stock-symbol">${stock.symbol}</span></td>
+                    <td>${formatCurrency(stock.price)}</td>
+                    <td class="${stock.change >= 0 ? 'positive' : 'negative'}">
+                        <i class="fa-solid fa-caret-${stock.change >= 0 ? 'up' : 'down'}"></i> ${stock.change.toFixed(2)}%
+                    </td>
+                    <td>${formatVolume(stock.volume)}</td>
+                    <td>${stock.pe.toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-buy btn-sm" onclick="event.stopPropagation(); openTradeModal('${stock.symbol}', 'buy')">
+                            <i class="fa-solid fa-cart-shopping"></i> Buy
+                        </button>
+                    </td>
+                `;
+                row.onclick = () => showStockDetail(stock.symbol);
+            });
+        }
+
+        function populateAllStocks() {
+            const tbody = document.getElementById('allStocks');
+            tbody.innerHTML = '';
+            
+            stocks.forEach(stock => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${stock.name}</td>
+                    <td><span class="stock-symbol">${stock.symbol}</span></td>
+                    <td>${formatCurrency(stock.price)}</td>
+                    <td class="${stock.change >= 0 ? 'positive' : 'negative'}">
+                        <i class="fa-solid fa-caret-${stock.change >= 0 ? 'up' : 'down'}"></i> ${stock.change.toFixed(2)}%
+                    </td>
+                    <td>${formatVolume(stock.volume)}</td>
+                    <td>${stock.pe.toFixed(2)}</td>
+                    <td>${stock.dividend.toFixed(2)}%</td>
+                    <td>${stock.sector}</td>
+                    <td>
+                        <button class="btn btn-buy btn-sm" onclick="event.stopPropagation(); openTradeModal('${stock.symbol}', 'buy')">
+                            <i class="fa-solid fa-cart-shopping"></i> Buy
+                        </button>
+                    </td>
+                `;
+                row.onclick = () => showStockDetail(stock.symbol);
+            });
+        }
+
+        function filterStocks() {
+            const searchTerm = document.getElementById('searchStock').value.toLowerCase();
+            const tbody = document.getElementById('allStocks');
+            tbody.innerHTML = '';
+            
+            const filtered = stocks.filter(stock => 
+                stock.name.toLowerCase().includes(searchTerm) || 
+                stock.symbol.toLowerCase().includes(searchTerm) ||
+                stock.sector.toLowerCase().includes(searchTerm)
+            );
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-muted); padding: 30px;"><i class="fa-solid fa-magnifying-glass" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>No stocks found</td></tr>';
+                return;
+            }
+            
+            filtered.forEach(stock => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${stock.name}</td>
+                    <td><span class="stock-symbol">${stock.symbol}</span></td>
+                    <td>${formatCurrency(stock.price)}</td>
+                    <td class="${stock.change >= 0 ? 'positive' : 'negative'}">
+                        <i class="fa-solid fa-caret-${stock.change >= 0 ? 'up' : 'down'}"></i> ${stock.change.toFixed(2)}%
+                    </td>
+                    <td>${formatVolume(stock.volume)}</td>
+                    <td>${stock.pe.toFixed(2)}</td>
+                    <td>${stock.dividend.toFixed(2)}%</td>
+                    <td>${stock.sector}</td>
+                    <td>
+                        <button class="btn btn-buy btn-sm" onclick="event.stopPropagation(); openTradeModal('${stock.symbol}', 'buy')">
+                            <i class="fa-solid fa-cart-shopping"></i> Buy
+                        </button>
+                    </td>
+                `;
+                row.onclick = () => showStockDetail(stock.symbol);
+            });
+        }
+
+        function updateMarketIndices() {
+            const container = document.getElementById('marketIndices');
+            container.innerHTML = '';
+            
+            marketIndices.forEach(index => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-light);';
+                div.innerHTML = `
+                    <span style="font-weight: 600;">${index.name}</span>
+                    <span>${index.value.toFixed(2)}</span>
+                    <span class="${index.change >= 0 ? 'positive' : 'negative'}" style="font-weight: 600;">
+                        <i class="fa-solid fa-caret-${index.change >= 0 ? 'up' : 'down'}"></i> ${index.change.toFixed(2)}%
+                    </span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateNewsTicker() {
+            const container = document.getElementById('newsTicker');
+            container.innerHTML = '';
+            
+            newsFeed.slice(0, 15).forEach(news => {
+                const div = document.createElement('div');
+                div.className = 'news-item';
+                div.innerHTML = `
+                    <div class="news-time">
+                        <i class="fa-regular fa-clock"></i> ${news.time}
+                        <span style="margin-left: 6px;"><i class="fa-solid fa-tag"></i> ${news.category}</span>
+                    </div>
+                    <div>${news.text}</div>
+                    <span class="news-impact impact-${news.impact}">
+                        <i class="fa-solid fa-${news.type === 'positive' ? 'arrow-up' : 'arrow-down'}"></i>
+                        ${news.impact}
+                    </span>
+                `;
+                div.onclick = () => showStockDetail(news.company);
+                container.appendChild(div);
+            });
+            
+            const newsFeedContainer = document.getElementById('newsFeed');
+            newsFeedContainer.innerHTML = '';
+            newsFeed.forEach(news => {
+                const div = document.createElement('div');
+                div.className = 'news-item';
+                div.innerHTML = `
+                    <div class="news-time">
+                        <i class="fa-regular fa-clock"></i> ${news.time}
+                        <span style="margin-left: 6px;"><i class="fa-solid fa-tag"></i> ${news.category}</span>
+                    </div>
+                    <div><strong>${news.companyName}:</strong> ${news.text}</div>
+                    <span class="news-impact impact-${news.impact}">
+                        <i class="fa-solid fa-${news.type === 'positive' ? 'arrow-up' : 'arrow-down'}"></i>
+                        ${news.impact}
+                    </span>
+                `;
+                div.onclick = () => showStockDetail(news.company);
+                newsFeedContainer.appendChild(div);
+            });
+            
+            document.getElementById('newsCount').textContent = newsFeed.length;
+        }
+
+        function populateStockSelect() {
+            const select = document.getElementById('tradeStock');
+            select.innerHTML = '';
+            
+            stocks.forEach(stock => {
+                const option = document.createElement('option');
+                option.value = stock.symbol;
+                option.textContent = `${stock.symbol} - ${stock.name}`;
+                select.appendChild(option);
+            });
+            
+            updateTradePrice();
+        }
+
+        function updateStockSelect() {
+            updateTradePrice();
+        }
+
+        function updateTradePrice() {
+            const select = document.getElementById('tradeStock');
+            const stock = stocks.find(s => s.symbol === select.value);
+            
+            if (stock) {
+                document.getElementById('tradePrice').value = formatCurrency(stock.price);
+                updateTradeTotal();
+            }
+        }
+
+        function updateTradeTotal() {
+            const priceText = document.getElementById('tradePrice').value;
+            const price = parseFloat(priceText.replace('$', '').replace(/,/g, ''));
+            const amount = parseInt(document.getElementById('tradeAmount').value) || 0;
+            document.getElementById('tradeTotal').value = formatCurrency(price * amount);
+        }
+
+        function executeTrade(type) {
+            const symbol = document.getElementById('tradeStock').value;
+            const amount = parseInt(document.getElementById('tradeAmount').value);
+            
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid quantity.');
+                return;
+            }
+            
+            const stock = stocks.find(s => s.symbol === symbol);
+            if (!stock) return;
+            
+            const totalCost = amount * stock.price;
+            
+            if (type === 'buy') {
+                if (totalCost > gameState.cash) {
+                    alert('Insufficient funds!');
+                    return;
+                }
+                
+                gameState.cash -= totalCost;
+                
+                if (gameState.portfolio[symbol]) {
+                    const oldQuantity = gameState.portfolio[symbol].quantity;
+                    const oldAvgPrice = gameState.portfolio[symbol].avgPrice;
+                    const newQuantity = oldQuantity + amount;
+                    const newAvgPrice = ((oldQuantity * oldAvgPrice) + totalCost) / newQuantity;
+                    gameState.portfolio[symbol].quantity = newQuantity;
+                    gameState.portfolio[symbol].avgPrice = newAvgPrice;
+                    gameState.portfolio[symbol].purchaseHistory.push({
+                        date: new Date().toISOString(),
+                        quantity: amount,
+                        price: stock.price,
+                    });
+                } else {
+                    gameState.portfolio[symbol] = {
+                        quantity: amount,
+                        avgPrice: stock.price,
+                        purchaseHistory: [{
+                            date: new Date().toISOString(),
+                            quantity: amount,
+                            price: stock.price,
+                        }],
+                    };
+                }
+                
+                gameState.trades.push({
+                    type: 'buy',
+                    symbol,
+                    quantity: amount,
+                    price: stock.price,
+                    total: totalCost,
+                    timestamp: new Date().toISOString(),
+                    cashAfter: gameState.cash,
+                });
+                
+                alert(`Bought ${amount} ${symbol} shares for ${formatCurrency(totalCost)}`);
+            } else {
+                const position = gameState.portfolio[symbol];
+                if (!position || position.quantity < amount) {
+                    alert('Not enough shares in portfolio!');
+                    return;
+                }
+                
+                gameState.cash += totalCost;
+                position.quantity -= amount;
+                
+                const profit = (stock.price - position.avgPrice) * amount;
+                
+                if (position.quantity === 0) {
+                    delete gameState.portfolio[symbol];
+                }
+                
+                gameState.trades.push({
+                    type: 'sell',
+                    symbol,
+                    quantity: amount,
+                    price: stock.price,
+                    total: totalCost,
+                    profit: profit,
+                    timestamp: new Date().toISOString(),
+                    cashAfter: gameState.cash,
+                });
+                
+                alert(`Sold ${amount} ${symbol} shares for ${formatCurrency(totalCost)}${profit >= 0 ? ' (Profit: ' + formatCurrency(profit) + ')' : ' (Loss: ' + formatCurrency(profit) + ')'}`);
+            }
+            
+            updatePortfolio();
+            updateTradePrice();
+        }
+
+        function updateTradeHistory() {
+            const tbody = document.getElementById('tradeHistory');
+            tbody.innerHTML = '';
+            
+            if (gameState.trades.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">No transactions yet</td></tr>';
+                return;
+            }
+            
+            gameState.trades.slice(-10).reverse().forEach(trade => {
+                const stock = stocks.find(s => s.symbol === trade.symbol);
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${new Date(trade.timestamp).toLocaleString('en-US')}</td>
+                    <td class="${trade.type === 'buy' ? 'positive' : 'negative'}">
+                        <i class="fa-solid fa-${trade.type === 'buy' ? 'arrow-down' : 'arrow-up'}"></i>
+                        ${trade.type.toUpperCase()}
+                    </td>
+                    <td>${stock ? stock.name : trade.symbol}</td>
+                    <td>${trade.quantity}</td>
+                    <td>${formatCurrency(trade.price)}</td>
+                    <td>${formatCurrency(trade.total)}</td>
+                `;
+            });
+        }
+
+        function updateFullHistory() {
+            const tbody = document.getElementById('fullHistory');
+            tbody.innerHTML = '';
+            
+            if (gameState.trades.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;"><i class="fa-solid fa-clock-rotate-left" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>No transactions yet</td></tr>';
+                return;
+            }
+            
+            gameState.trades.slice().reverse().forEach(trade => {
+                const stock = stocks.find(s => s.symbol === trade.symbol);
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${new Date(trade.timestamp).toLocaleString('en-US')}</td>
+                    <td class="${trade.type === 'buy' ? 'positive' : 'negative'}">
+                        <i class="fa-solid fa-${trade.type === 'buy' ? 'arrow-down' : 'arrow-up'}"></i>
+                        ${trade.type.toUpperCase()}
+                    </td>
+                    <td>${stock ? stock.name : trade.symbol} (${trade.symbol})</td>
+                    <td>${trade.quantity}</td>
+                    <td>${formatCurrency(trade.price)}</td>
+                    <td>${formatCurrency(trade.total)}</td>
+                    <td>${formatCurrency(trade.cashAfter)}</td>
+                `;
+            });
+        }
+
+        // SVG Chart
+        function createSVGChart(data, width = 400, height = 200, color = '#28a745') {
+            if (data.length < 2) return '';
+            
+            const padding = 20;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            const values = data.map(d => d.value);
+            const minValue = Math.min(...values);
+            const maxValue = Math.max(...values);
+            const range = maxValue - minValue || 1;
+            
+            const points = data.map((point, index) => {
+                const x = padding + (index / (data.length - 1)) * chartWidth;
+                const y = padding + chartHeight - ((point.value - minValue) / range) * chartHeight;
+                return { x, y };
+            });
+            
+            const linePath = points.map((p, i) => 
+                `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`
+            ).join(' ');
+            
+            const areaPath = `${linePath} L ${points[points.length - 1].x.toFixed(2)} ${padding + chartHeight} L ${points[0].x.toFixed(2)} ${padding + chartHeight} Z`;
+            
+            const lastPoint = points[points.length - 1];
+            
+            return `
+                <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="areaGradient-${Math.random().toString(36).substr(2, 9)}" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="${color}" stop-opacity="0.3"/>
+                            <stop offset="100%" stop-color="${color}" stop-opacity="0.05"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="${areaPath}" fill="url(#areaGradient-${Math.random().toString(36).substr(2, 9)})" opacity="0.3"/>
+                    <path d="${linePath}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="${lastPoint.x}" cy="${lastPoint.y}" r="4" fill="${color}"/>
+                </svg>
+            `;
+        }
+
+        function updatePerformanceChart() {
+            const container = document.getElementById('performanceChart');
+            if (!container) return;
+            
+            const data = gameState.performanceHistory;
+            container.innerHTML = createSVGChart(data, 400, 200, '#28a745');
+        }
+
+        function showStockDetail(symbol) {
+            const stock = stocks.find(s => s.symbol === symbol);
+            if (!stock) return;
+            
+            selectedDetailStock = stock;
+            
+            document.getElementById('stockDetailTitle').innerHTML = `<i class="fa-solid fa-chart-simple"></i> ${stock.name} (${stock.symbol})`;
+            
+            const position = gameState.portfolio[symbol];
+            const positionInfo = position ? 
+                `<p><strong>Your Position</strong> <span>${position.quantity} shares @ ${formatCurrency(position.avgPrice)}</span></p>` : 
+                '<p><strong>Your Position</strong> <span>None</span></p>';
+            
+            const historicalData = [];
+            let price = stock.price * 0.95;
+            for (let i = 0; i < 50; i++) {
+                price *= (1 + (Math.random() - 0.5) * 0.02);
+                historicalData.push({value: price});
+            }
+            historicalData.push({value: stock.price});
+            
+            document.getElementById('stockDetailContent').innerHTML = `
+                <div class="stock-detail-grid">
+                    <div>
+                        <h3><i class="fa-solid fa-dollar-sign"></i> Price Information</h3>
+                        <p><strong>Current Price</strong> <span>${formatCurrency(stock.price)}</span></p>
+                        <p><strong>Daily Change</strong> <span class="${stock.change >= 0 ? 'positive' : 'negative'}">
+                            <i class="fa-solid fa-caret-${stock.change >= 0 ? 'up' : 'down'}"></i> ${stock.change.toFixed(2)}%
+                        </span></p>
+                        <p><strong>Volume</strong> <span>${formatVolume(stock.volume)}</span></p>
+                    </div>
+                    <div>
+                        <h3><i class="fa-solid fa-chart-bar"></i> Key Metrics</h3>
+                        <p><strong>P/E Ratio</strong> <span>${stock.pe.toFixed(2)}</span></p>
+                        <p><strong>Dividend Yield</strong> <span>${stock.dividend.toFixed(2)}%</span></p>
+                        <p><strong>Beta</strong> <span>${stock.beta.toFixed(2)}</span></p>
+                        <p><strong>Market Cap</strong> <span>${stock.marketCap}</span></p>
+                        <p><strong>Sector</strong> <span>${stock.sector}</span></p>
+                    </div>
+                </div>
+                <div style="margin-top: 12px;">
+                    <p style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--border-light);">
+                        ${positionInfo.replace('<p>', '').replace('</p>', '')}
+                    </p>
+                </div>
+                <div class="chart-container">
+                    ${createSVGChart(historicalData, 500, 200, '#007bff')}
+                </div>
+                ${position ? `
+                    <div style="margin-top: 20px;">
+                        <h4 style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-list"></i> Purchase History
+                        </h4>
+                        ${position.purchaseHistory.map(p => 
+                            `<p style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border-light); font-size: 13px;">
+                                <span><i class="fa-regular fa-calendar"></i> ${new Date(p.date).toLocaleString('en-US')}</span>
+                                <span>${p.quantity} shares @ ${formatCurrency(p.price)}</span>
+                            </p>`
+                        ).join('')}
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('stockDetailModal').style.display = 'flex';
+        }
+
+        function buyFromDetail() {
+            if (selectedDetailStock) {
+                openTradeModal(selectedDetailStock.symbol, 'buy');
+                closeStockDetail();
+            }
+        }
+
+        function closeStockDetail() {
+            document.getElementById('stockDetailModal').style.display = 'none';
+        }
+
+        function openTradeModal(symbol, type) {
+            const stock = stocks.find(s => s.symbol === symbol);
+            if (!stock) return;
+            
+            document.getElementById('modalTitle').innerHTML = `<i class="fa-solid fa-${type === 'buy' ? 'cart-shopping' : 'money-bill-transfer'}"></i> ${type === 'buy' ? 'Buy' : 'Sell'} - ${stock.name}`;
+            
+            const position = gameState.portfolio[symbol];
+            const positionInfo = position ? 
+                `<p><i class="fa-solid fa-briefcase"></i> In Portfolio: <strong>${position.quantity} shares</strong></p>` : '';
+            
+            document.getElementById('modalContent').innerHTML = `
+                <p><i class="fa-solid fa-dollar-sign"></i> Current Price: <strong>${formatCurrency(stock.price)}</strong></p>
+                ${positionInfo}
+                <div class="form-group" style="margin-top: 16px;">
+                    <label>Quantity</label>
+                    <input type="number" id="modalAmount" min="1" value="1" onchange="updateModalTotal(${stock.price})">
+                </div>
+                <p><i class="fa-solid fa-calculator"></i> Total Value: <strong id="modalTotal">${formatCurrency(stock.price)}</strong></p>
+                <p><i class="fa-solid fa-wallet"></i> Available Cash: <strong>${formatCurrency(gameState.cash)}</strong></p>
+            `;
+            
+            document.getElementById('tradeModal').style.display = 'flex';
+            document.getElementById('tradeModal').dataset.symbol = symbol;
+            document.getElementById('tradeModal').dataset.type = type;
+        }
+
+        function updateModalTotal(price) {
+            const amount = parseInt(document.getElementById('modalAmount').value) || 0;
+            document.getElementById('modalTotal').textContent = formatCurrency(price * amount);
+        }
+
+        function confirmTrade() {
+            const symbol = document.getElementById('tradeModal').dataset.symbol;
+            const type = document.getElementById('tradeModal').dataset.type;
+            const amount = parseInt(document.getElementById('modalAmount').value);
+            
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid quantity.');
+                return;
+            }
+            
+            document.getElementById('tradeStock').value = symbol;
+            document.getElementById('tradeAmount').value = amount;
+            updateTradePrice();
+            executeTrade(type);
+            closeModal();
+        }
+
+        function closeModal() {
+            document.getElementById('tradeModal').style.display = 'none';
+        }
+
+        function showSection(section, btn) {
+            const sections = ['overview', 'portfolio', 'market', 'news', 'analysis', 'history'];
+            sections.forEach(s => {
+                document.getElementById(s + 'Section').style.display = 'none';
+            });
+            
+            document.getElementById(section + 'Section').style.display = 'block';
+            
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('active');
+            });
+            if (btn) btn.classList.add('active');
+            
+            if (section === 'market') populateAllStocks();
+            else if (section === 'news') updateNewsTicker();
+            else if (section === 'analysis') updateAnalysis();
+            else if (section === 'portfolio') {
+                updatePortfolioHoldings();
+                updateTradeHistory();
+            } else if (section === 'history') updateFullHistory();
+        }
+
+        function updateAnalysis() {
+            const container = document.getElementById('marketAnalysis');
+            
+            const avgChange = stocks.reduce((sum, stock) => sum + stock.change, 0) / stocks.length;
+            const gainers = stocks.filter(s => s.change > 0).length;
+            const losers = stocks.filter(s => s.change < 0).length;
+            
+            const topGainers = stocks.slice().sort((a, b) => b.change - a.change).slice(0, 5);
+            const topLosers = stocks.slice().sort((a, b) => a.change - b.change).slice(0, 5);
+            
+            container.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+                    <div>
+                        <h3 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-globe"></i> Market Overview
+                        </h3>
+                        <p style="padding: 6px 0; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between;">
+                            <span>Average Change</span>
+                            <span class="${avgChange >= 0 ? 'positive' : 'negative'}"><strong>${avgChange.toFixed(2)}%</strong></span>
+                        </p>
+                        <p style="padding: 6px 0; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between;">
+                            <span>Gainers</span>
+                            <span class="positive"><strong>${gainers}</strong></span>
+                        </p>
+                        <p style="padding: 6px 0; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between;">
+                            <span>Losers</span>
+                            <span class="negative"><strong>${losers}</strong></span>
+                        </p>
+                        <p style="padding: 6px 0; display: flex; justify-content: space-between;">
+                            <span>Total Volume</span>
+                            <span><strong>${formatVolume(stocks.reduce((sum, s) => sum + s.volume, 0))}</strong></span>
+                        </p>
+                    </div>
+                    <div>
+                        <h3 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-user"></i> Your Performance
+                        </h3>
+                        <p style="padding: 6px 0; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between;">
+                            <span>Portfolio Value</span>
+                            <span><strong>${formatCurrency(gameState.cash + calculateStockValue())}</strong></span>
+                        </p>
+                        <p style="padding: 6px 0; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between;">
+                            <span>Positions</span>
+                            <span><strong>${Object.keys(gameState.portfolio).length}</strong></span>
+                        </p>
+                        <p style="padding: 6px 0; display: flex; justify-content: space-between;">
+                            <span>Total Trades</span>
+                            <span><strong>${gameState.trades.length}</strong></span>
+                        </p>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h3 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--accent-green);">
+                            <i class="fa-solid fa-arrow-trend-up"></i> Top Gainers
+                        </h3>
+                        ${topGainers.map(s => 
+                            `<p style="padding: 6px 0; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between;">
+                                <span>${s.name} (${s.symbol})</span>
+                                <span class="positive"><strong>+${s.change.toFixed(2)}%</strong></span>
+                            </p>`
+                        ).join('')}
+                    </div>
+                    <div>
+                        <h3 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; color: var(--accent-red);">
+                            <i class="fa-solid fa-arrow-trend-down"></i> Top Losers
+                        </h3>
+                        ${topLosers.map(s => 
+                            `<p style="padding: 6px 0; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between;">
+                                <span>${s.name} (${s.symbol})</span>
+                                <span class="negative"><strong>${s.change.toFixed(2)}%</strong></span>
+                            </p>`
+                        ).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveGame() {
+            const saveData = {
+                gameState: gameState,
+                stocks: stocks.map(s => ({...s})),
+                marketIndices: marketIndices.map(i => ({...i})),
+                newsFeed: newsFeed,
+                newsCounter: newsCounter,
+            };
+            
+            localStorage.setItem('stockMarketProSave', JSON.stringify(saveData));
+            showNotification('Game saved successfully!', 'success');
+        }
+
+        function loadGame() {
+            const saveData = localStorage.getItem('stockMarketProSave');
+            
+            if (!saveData) {
+                showNotification('No save game found!', 'error');
+                return;
+            }
+            
+            try {
+                const data = JSON.parse(saveData);
+                
+                gameState = data.gameState;
+                data.stocks.forEach((s, i) => {
+                    if (stocks[i]) Object.assign(stocks[i], s);
+                });
+                data.marketIndices.forEach((idx, i) => {
+                    if (marketIndices[i]) Object.assign(marketIndices[i], idx);
+                });
+                newsFeed = data.newsFeed;
+                newsCounter = data.newsCounter;
+                
+                updatePortfolio();
+                updateNewsTicker();
+                updatePerformanceChart();
+                populateStockSelect();
+                
+                showNotification('Game loaded successfully!', 'success');
+            } catch (e) {
+                showNotification('Error loading game: ' + e.message, 'error');
+            }
+        }
+
+        function exportConfig() {
+            const config = {
+                gameState: gameState,
+                stocks: stocks.map(s => ({...s})),
+                marketIndices: marketIndices.map(i => ({...i})),
+                newsFeed: newsFeed,
+                newsCounter: newsCounter,
+                version: '1.0',
+                exportDate: new Date().toISOString(),
+            };
+            
+            const blob = new Blob([JSON.stringify(config, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `stockmarket-config-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('Configuration exported!', 'success');
+        }
+
+        function importConfig() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    try {
+                        const config = JSON.parse(event.target.result);
+                        
+                        gameState = config.gameState;
+                        config.stocks.forEach((s, i) => {
+                            if (stocks[i]) Object.assign(stocks[i], s);
+                        });
+                        config.marketIndices.forEach((idx, i) => {
+                            if (marketIndices[i]) Object.assign(marketIndices[i], idx);
+                        });
+                        newsFeed = config.newsFeed;
+                        newsCounter = config.newsCounter;
+                        
+                        updatePortfolio();
+                        updateNewsTicker();
+                        updatePerformanceChart();
+                        populateStockSelect();
+                        
+                        showNotification('Configuration imported!', 'success');
+                    } catch (e) {
+                        showNotification('Error importing: ' + e.message, 'error');
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 90px;
+                right: 20px;
+                background: ${type === 'success' ? 'var(--accent-green)' : type === 'error' ? 'var(--accent-red)' : 'var(--accent-blue)'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: var(--radius-sm);
+                box-shadow: var(--shadow-lg);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                animation: slideIn 0.3s ease;
+                font-weight: 500;
+            `;
+            notification.innerHTML = `
+                <i class="fa-solid fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                ${message}
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                notification.style.transition = 'all 0.3s';
+                setTimeout(() => notification.remove(), 300);
+            }, 2500);
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(value);
+        }
+
+        function formatVolume(volume) {
+            if (volume >= 1000000000) return (volume / 1000000000).toFixed(2) + 'B';
+            if (volume >= 1000000) return (volume / 1000000).toFixed(1) + 'M';
+            if (volume >= 1000) return (volume / 1000).toFixed(1) + 'K';
+            return volume.toString();
+        }
+
+        init();
+    </script>
+</body>
+</html>
 
